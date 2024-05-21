@@ -11,17 +11,23 @@ public class CircleObject : MonoBehaviour
 
     public int index;
 
+    public float EndTime = 0.0f;
+    public SpriteRenderer spriteRenderer;
+
+    public GameManager gameManager;
+
     void Awake()
     {
         isUsed = false;
         rigidbody2D = GetComponent<Rigidbody2D>();
         rigidbody2D.simulated = false;
+        spriteRenderer = GetComponent<SpriteRenderer>();
     }
 
     // Start is called before the first frame update
     void Start()
     {
-       
+       gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
     }
 
     // Update is called once per frame
@@ -72,6 +78,32 @@ public class CircleObject : MonoBehaviour
         isDrag = false;
         isUsed = true;
         rigidbody2D.simulated = true;
+    }
+
+    public void OnTriggerStay2D(Collider2D collision)
+    {
+        if(collision.tag == "EndLine")
+        {
+            EndTime += Time.deltaTime;
+
+            if(EndTime > 1)
+            {
+                spriteRenderer.color = new Color(0.9f, 0.2f, 0.2f);
+            }
+            if(EndTime>3)
+            {
+                gameManager.EndGame();
+            }
+        }
+    }
+
+    public void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.tag == "EndLine")
+        {
+            EndTime = 0.0f;
+            spriteRenderer.color = Color.white;
+        }
     }
 
     public void OnCollisionEnter2D(Collision2D collision)
